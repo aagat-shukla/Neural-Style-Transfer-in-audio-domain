@@ -118,3 +118,17 @@ with tf.Graph().as_default():
     
         print('Final loss:', loss.eval())
         result = x.eval()
+
+    a = np.zeros_like(a_content)
+    a[:N_CHANNELS,:] = np.exp(result[0,0].T) - 1
+    # This code is supposed to do phase reconstruction
+p = 2 * np.pi * np.random.random_sample(a.shape) - np.pi
+for i in range(500):
+    S = a * np.exp(1j*p)
+    x = librosa.istft(S)
+    p = np.angle(librosa.stft(x, N_FFT))
+
+OUTPUT_FILENAME = 'outputs/out.wav'
+librosa.output.write_wav(OUTPUT_FILENAME, x, fs)
+print OUTPUT_FILENAME
+display(Audio(OUTPUT_FILENAME))
